@@ -1,8 +1,11 @@
 package br.com.fatecararas.f290_dsm_tp2_suggestionbox_ct.api.v1.resources;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import br.com.fatecararas.f290_dsm_tp2_suggestionbox_ct.model.entities.Suggestion;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,19 +44,30 @@ public class CategoryResource {
     }
 
     @PutMapping("/{id}")
-    public Category update(@PathVariable("id") Integer pId, @RequestBody Category category) {
-        return service.atualizar(pId, category);
+    public CategoryDTO update(@PathVariable("id") Integer pId, @RequestBody Category category) {
+        return convertToDTO(service.atualizar(pId, category));
     }
 
     @GetMapping("/{id}")
-    public Category findById(@PathVariable("id") Integer pId) {
-        return service.buscarPorId(pId);
+    public CategoryDTO findById(@PathVariable("id") Integer pId) {
+        Category category = service.buscarPorId(pId);
+       return convertToDTO(category);
     }
 
     @GetMapping("/all")
-    public List<Category> getAll() {
-        return service.buscarTodos();
+    public List<CategoryDTO> getAll() {
+        return service.buscarTodos().stream().map(this::convertToDTO).collect(Collectors.toList());
     }
+
+    private CategoryDTO convertToDTO(Category category){
+        CategoryDTO dto = new CategoryDTO(category.getId(), category.getDescription(), new ArrayList<>());
+        for (Suggestion suggestion: category.getSuggestions()) {
+            SuggestionDTO suggestionDTO = new SuggestionDTO(suggestion.getId(), suggestion.getDescription(), suggestion.getData(), null);
+            dto.getSuggestions().add(suggestionDTO);
+        }
+        return dto;
+    }
+
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable("id") Integer pId) throws Exception {

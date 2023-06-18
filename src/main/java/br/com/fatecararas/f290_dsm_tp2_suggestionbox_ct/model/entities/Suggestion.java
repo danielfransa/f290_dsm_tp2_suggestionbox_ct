@@ -28,6 +28,7 @@ public class Suggestion {
     private String description;
     private LocalDate data;
 
+
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;

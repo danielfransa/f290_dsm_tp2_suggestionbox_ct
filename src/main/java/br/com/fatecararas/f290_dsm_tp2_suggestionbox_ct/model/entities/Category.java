@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 @Data
@@ -23,6 +25,7 @@ public class Category {
     @Column(nullable = false, length = 100, unique = true)
     private String description;
 
+    @JsonBackReference
     @OneToMany(mappedBy = "category")
     private List<Suggestion> suggestions = new ArrayList<>();
 }
